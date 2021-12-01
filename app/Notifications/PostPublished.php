@@ -60,7 +60,7 @@ class PostPublished extends Notification implements ShouldQueue
 
         return (new MailMessage)
             ->subject('New Post: ' . $this->post->name)
-            ->line('New Post, please have a look...')
+            ->line($this->post->description)
             ->action('view', url($this->post->slug))
             ->line('Thank you');
     }
