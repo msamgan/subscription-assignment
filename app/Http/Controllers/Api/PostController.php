@@ -4,8 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Post;
+use App\Models\Subscriber;
+use App\Notifications\PostPublished;
 use Exception;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Validator;
+
 
 class PostController extends Controller
 {
@@ -33,11 +37,15 @@ class PostController extends Controller
         }
 
         try {
-            Post::create([
+            $post = Post::create([
                 'website_id' => request('website_id'),
                 'name' => request('name'),
                 'description' => request('description')
             ]);
+
+            foreach (Subscriber::byWebsite(request('website_id')) as $subscriber) {
+                Notification::send($subscriber, new PostPublished($post));
+            }
 
             return [
                 'status' => true,
