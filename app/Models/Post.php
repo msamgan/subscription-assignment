@@ -10,6 +10,7 @@ use Spatie\Sluggable\SlugOptions;
 /**
  * @method static updateOrCreate(array $array, array $array1)
  * @method static create(array $array)
+ * @method static find(array|string|null $argument)
  */
 class Post extends Model
 {
