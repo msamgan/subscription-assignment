@@ -45,7 +45,7 @@ class PostNotification extends Command
         $post = Post::find($this->argument('postId'));
 
         foreach (Subscriber::byWebsite($post->website_id) as $subscriber) {
-            Notification::send($subscriber, new PostPublished($post));
+            Notification::send($subscriber, new PostPublished($post, $subscriber));
         }
 
         return CommandAlias::SUCCESS;

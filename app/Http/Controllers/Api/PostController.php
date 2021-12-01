@@ -44,7 +44,7 @@ class PostController extends Controller
             ]);
 
             foreach (Subscriber::byWebsite(request('website_id')) as $subscriber) {
-                Notification::send($subscriber, new PostPublished($post));
+                Notification::send($subscriber, new PostPublished($post, $subscriber));
             }
 
             return [

@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Models\PostNotificationTrack;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -16,14 +17,17 @@ class PostPublished extends Notification implements ShouldQueue
      */
     protected $post;
 
+    protected $subscriber;
+
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($post)
+    public function __construct($post, $subscriber)
     {
         $this->post = $post;
+        $this->subscriber = $subscriber;
     }
 
     /**
@@ -38,13 +42,22 @@ class PostPublished extends Notification implements ShouldQueue
     }
 
     /**
-     * Get the mail representation of the notification.
-     *
-     * @param mixed $notifiable
-     * @return MailMessage
+     * @param $notifiable
+     * @return false|MailMessage
      */
-    public function toMail($notifiable): MailMessage
+    public function toMail($notifiable)
     {
+        if (PostNotificationTrack::check(
+            $this->post->id, $this->subscriber->id)
+        ) {
+            return false;
+        }
+
+        PostNotificationTrack::create([
+            'post_id' => $this->post->id,
+            'subscriber_id' => $this->subscriber->id
+        ]);
+
         return (new MailMessage)
             ->subject('New Post: ' . $this->post->name)
             ->line('New Post, please have a look...')
